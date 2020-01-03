@@ -1,0 +1,9 @@
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\bin\Debug\TCP_Client_more_test.exe.config
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.csprojResolveAssemblyReference.cache
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.Form1.resources
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.Properties.Resources.resources
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.csproj.GenerateResource.Cache
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\bin\Debug\TCP_Client_more_test.exe
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\bin\Debug\TCP_Client_more_test.pdb
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.exe
+D:\Test\TCP连接测试\TCP_Client_more_test\TCP_Client_more_test\obj\Debug\TCP_Client_more_test.pdb
