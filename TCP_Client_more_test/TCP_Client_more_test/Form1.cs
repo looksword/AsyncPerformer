@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
 using System.Net.Sockets;
+using System.Net;
 
 namespace TCP_Client_more_test
 {
@@ -19,6 +20,39 @@ namespace TCP_Client_more_test
         //private List<AsyncTcpClient> asyncClientlist;
         private List<AsyncPerformer> asyncPerformerlist;
         public int testnum = 0;
+        public int successnum = 0;
+        public static string LocalIP
+        {
+            get
+            {
+
+                try
+                {
+                    string HostName = Dns.GetHostName(); //得到主机名
+                    IPHostEntry IpEntry = Dns.GetHostEntry(HostName);
+                    //IPAddress[] ipadrlist = Dns.GetHostAddresses(HostName); 
+                    for (int i = 0; i < IpEntry.AddressList.Length; i++)
+                    {
+                        //从IP地址列表中筛选出IPv4类型的IP地址
+                        //AddressFamily.InterNetwork表示此IP为IPv4,
+                        //AddressFamily.InterNetworkV6表示此地址为IPv6类型
+                        if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            if (IpEntry.AddressList[i].ToString().StartsWith("192.168.1"))
+                            {
+                                return IpEntry.AddressList[i].ToString();
+                            }
+                        }
+                    }
+                    return "";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("获取本机IP出错:" + ex.Message);
+                    return "";
+                }
+            }
+        }
 
         public Form1()
         {
@@ -48,6 +82,7 @@ namespace TCP_Client_more_test
                 apf.OnStart += TCPOnStart;
                 apf.OnStop += TCPOnStop;
                 apf.OnAsyncWork += TCPOnAsyncWork;
+                apf.id = 33080 + i;
                 if (readORwrite.SelectedIndex == 1)
                 {
                     apf.readFlag = true;
@@ -61,6 +96,7 @@ namespace TCP_Client_more_test
             }
             debug_text.Clear();
             testnum = 0;
+            successnum = 0;
             timer1.Start();
             Connectbutton.Enabled = false;
             Disconnectbutton.Enabled = true;
@@ -94,9 +130,9 @@ namespace TCP_Client_more_test
             byte[] writebyte = { 0x01, 0x05, 0x00, 0x10, 0x00, 0x00, 0xCC, 0x0F };
             if (apf.readFlag)
             {
-                apf.userTcp.Client.Send(readbyte);
-                byte[] receive = new byte[10];
-                apf.userTcp.Client.Receive(receive);
+                apf.userSocket.Send(readbyte);
+                byte[] receive = new byte[6];
+                apf.userSocket.Receive(receive);
                 if (receive[1] == 0x01)
                 {
                     apf.readsuccess = true;
@@ -108,9 +144,9 @@ namespace TCP_Client_more_test
             }
             if (apf.writeFlag)
             {
-                apf.userTcp.Client.Send(writebyte);
-                byte[] receive = new byte[10];
-                apf.userTcp.Client.Receive(receive);
+                apf.userSocket.Send(writebyte);
+                byte[] receive = new byte[8];
+                apf.userSocket.Receive(receive);
                 if (receive[1] == 0x05)
                 {
                     apf.writesuccess = true;
@@ -124,26 +160,31 @@ namespace TCP_Client_more_test
 
         private void TCPOnStart(AsyncPerformer performer, ref object userState)
         {
-            if (performer.userTcp == null)
+            if (performer.userSocket == null)
             {
-                performer.userTcp = new TcpClient();
-                performer.userTcp.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
+                performer.userSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.id));//指定本机地址及端口
+                performer.userSocket.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
             }
-            else if (!performer.userTcp.Connected)
+            else if (!performer.userSocket.Connected)
             {
-                performer.userTcp.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
+                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.id));//指定本机地址及端口
+                performer.userSocket.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
             }
-            performer.userTcp.Client.SendTimeout = 500;
-            performer.userTcp.Client.ReceiveTimeout = 500;
+            performer.userSocket.SendTimeout = 500;
+            performer.userSocket.ReceiveTimeout = 500;
         }
 
         private void TCPOnStop(AsyncPerformer performer, ref object userState)
         {
-            if (performer.userTcp != null)
+            if (performer.userSocket != null)
             {
                 try
                 {
-                    performer.userTcp.Close();
+                    //IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(LocalIP), performer.id);
+                    //TcpListener tcpListener = new TcpListener(endPoint);
+                    //tcpListener.Stop();
+                    performer.userSocket.Close();
                 }
                 finally { }
             }
@@ -159,7 +200,7 @@ namespace TCP_Client_more_test
 
             foreach (AsyncPerformer apf in asyncPerformerlist)
             {
-                if (apf.userTcp.Connected)
+                if (apf.userSocket.Connected)
                 {
                     connectnum++;
                     if (apf.readFlag)
@@ -178,11 +219,30 @@ namespace TCP_Client_more_test
                     }
                 }
             }
+            if (readORwrite.SelectedIndex == 0)
+            {
+                successnum = connectnum;
+            }
+            if (readORwrite.SelectedIndex == 1)
+            {
+                if ((asyncPerformerlist.Count - readnum) == 0)
+                {
+                    successnum++;
+                }
+            }
+            if (readORwrite.SelectedIndex == 2)
+            {
+                if ((asyncPerformerlist.Count - writenum) == 0)
+                {
+                    successnum++;
+                }
+            }
             debug_text.AppendText(string.Format("已连接：{0} 未连接：{1}\r\n", connectnum, asyncPerformerlist.Count - connectnum));
             debug_text.AppendText(string.Format("已读取：{0} 未读取：{1}\r\n", readnum, asyncPerformerlist.Count - readnum));
             debug_text.AppendText(string.Format("已写入：{0} 未写入：{1}\r\n", writenum, asyncPerformerlist.Count - writenum));
             debug_text.AppendText(string.Format("当前时间：{0}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")));
-            debug_text.AppendText(string.Format("次数：{0}", testnum));
+            debug_text.AppendText(string.Format("测试次数：{0}\r\n", testnum));
+            debug_text.AppendText(string.Format("成功次数：{0}", successnum));
         }
     }
 
@@ -198,7 +258,9 @@ namespace TCP_Client_more_test
         public uint Timeout = 0;//=0: infinity; >0: milliseconds
         public object userState = null;
 
-        public TcpClient userTcp = null;
+        //public TcpClient userTcp = null;
+        public Socket userSocket = null;
+        public int id;
         public bool readFlag = false;
         public bool writeFlag = false;
         public bool readsuccess = false;
