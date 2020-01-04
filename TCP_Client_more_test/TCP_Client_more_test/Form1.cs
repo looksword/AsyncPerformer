@@ -38,7 +38,7 @@ namespace TCP_Client_more_test
                         //AddressFamily.InterNetworkV6表示此地址为IPv6类型
                         if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
                         {
-                            if (IpEntry.AddressList[i].ToString().StartsWith("192.168.1"))
+                            if (IpEntry.AddressList[i].ToString().StartsWith("192.168.1."))
                             {
                                 return IpEntry.AddressList[i].ToString();
                             }
@@ -77,12 +77,12 @@ namespace TCP_Client_more_test
             for (int i = 0; i < int.Parse(ConnectNum.Text); i++)
             {
                 AsyncPerformer apf = new AsyncPerformer();
-                apf.Timeout = 8000;
+                apf.Timeout = 4000;
                 apf.Interval = 1000;
                 apf.OnStart += TCPOnStart;
                 apf.OnStop += TCPOnStop;
                 apf.OnAsyncWork += TCPOnAsyncWork;
-                apf.id = 31080 + i;
+                apf.usePort = int.Parse(listenPort.Text) + i;//缓兵之计,监听端口的关闭问题
                 if (readORwrite.SelectedIndex == 1)
                 {
                     apf.readFlag = true;
@@ -117,6 +117,7 @@ namespace TCP_Client_more_test
             {
                 apf.Stop();
             }
+            asyncPerformerlist.Clear();
             debug_text.Clear();
             timer1.Stop();
             Disconnectbutton.Enabled = false;
@@ -127,7 +128,7 @@ namespace TCP_Client_more_test
         {
             if(!apf.userSocket.Connected)
             {
-                reqNewThread = true;
+                //apf.Start();
             }
             byte[] readbyte = { 0x01, 0x01, 0x00, 0x00, 0x00, 0x04, 0x3D, 0xC9 };
             byte[] readbyte2 = { 0x01, 0x01, 0x00, 0x00, 0x00, 0x04, 0x3D, 0xC9 };
@@ -167,12 +168,12 @@ namespace TCP_Client_more_test
             if (performer.userSocket == null)
             {
                 performer.userSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.id));//指定本机地址及端口
+                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.usePort));//指定本机地址及端口
                 performer.userSocket.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
             }
             else if (!performer.userSocket.Connected)
             {
-                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.id));//指定本机地址及端口
+                performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.usePort));//指定本机地址及端口
                 performer.userSocket.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
             }
             performer.userSocket.SendTimeout = 500;
@@ -185,7 +186,7 @@ namespace TCP_Client_more_test
             {
                 try
                 {
-                    //IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(LocalIP), performer.id);
+                    //IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(LocalIP), performer.usePort);
                     //TcpListener tcpListener = new TcpListener(endPoint);
                     //tcpListener.Stop();
                     performer.userSocket.Close();
@@ -228,7 +229,10 @@ namespace TCP_Client_more_test
             }
             if (readORwrite.SelectedIndex == 0)
             {
-                successnum = connectnum;
+                if ((asyncPerformerlist.Count - connectnum) == 0)
+                {
+                    successnum++;
+                }
             }
             if (readORwrite.SelectedIndex == 1)
             {
@@ -267,7 +271,7 @@ namespace TCP_Client_more_test
 
         //public TcpClient userTcp = null;
         public Socket userSocket = null;
-        public int id;
+        public int usePort;
         public bool readFlag = false;
         public bool writeFlag = false;
         public bool readsuccess = false;

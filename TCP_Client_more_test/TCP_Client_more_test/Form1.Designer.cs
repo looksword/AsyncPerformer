@@ -40,6 +40,8 @@
             this.debug_text = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.readORwrite = new System.Windows.Forms.ComboBox();
+            this.listenPort = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -137,11 +139,30 @@
             this.readORwrite.Size = new System.Drawing.Size(129, 20);
             this.readORwrite.TabIndex = 9;
             // 
+            // listenPort
+            // 
+            this.listenPort.Location = new System.Drawing.Point(286, 65);
+            this.listenPort.Name = "listenPort";
+            this.listenPort.Size = new System.Drawing.Size(47, 21);
+            this.listenPort.TabIndex = 11;
+            this.listenPort.Text = "30000";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(191, 68);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 12);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "起始监听端口号";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 394);
+            this.Controls.Add(this.listenPort);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.readORwrite);
             this.Controls.Add(this.debug_text);
             this.Controls.Add(this.ConnectNum);
@@ -172,6 +193,8 @@
         private System.Windows.Forms.TextBox debug_text;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ComboBox readORwrite;
+        private System.Windows.Forms.TextBox listenPort;
+        private System.Windows.Forms.Label label4;
     }
 }
 
