@@ -82,7 +82,7 @@ namespace TCP_Client_more_test
                 apf.OnStart += TCPOnStart;
                 apf.OnStop += TCPOnStop;
                 apf.OnAsyncWork += TCPOnAsyncWork;
-                apf.id = 33080 + i;
+                apf.id = 31080 + i;
                 if (readORwrite.SelectedIndex == 1)
                 {
                     apf.readFlag = true;
@@ -125,6 +125,10 @@ namespace TCP_Client_more_test
 
         private void TCPOnAsyncWork(AsyncPerformer apf, ref bool reqNewThread, ref object userState)
         {
+            if(!apf.userSocket.Connected)
+            {
+                reqNewThread = true;
+            }
             byte[] readbyte = { 0x01, 0x01, 0x00, 0x00, 0x00, 0x04, 0x3D, 0xC9 };
             byte[] readbyte2 = { 0x01, 0x01, 0x00, 0x00, 0x00, 0x04, 0x3D, 0xC9 };
             byte[] writebyte = { 0x01, 0x05, 0x00, 0x10, 0x00, 0x00, 0xCC, 0x0F };
@@ -186,7 +190,10 @@ namespace TCP_Client_more_test
                     //tcpListener.Stop();
                     performer.userSocket.Close();
                 }
-                finally { }
+                catch
+                {
+
+                }
             }
         }
 
@@ -254,7 +261,7 @@ namespace TCP_Client_more_test
         private bool stopSignal = true;
         private bool asyncWorking = false;
         private bool timeoutCtrlFlag = false;
-        private bool reqNewThread = false;
+        private bool reqNewThread = false;//线程更新
         public uint Timeout = 0;//=0: infinity; >0: milliseconds
         public object userState = null;
 
@@ -292,8 +299,14 @@ namespace TCP_Client_more_test
         public delegate void WorkHandler(AsyncPerformer performer, ref bool reqNewThread, ref object userState);
         public event WorkHandler OnAsyncWork = null;
         protected virtual void AsyncWork(ref bool reqNewThread, ref object userState) { }
+        /// <summary>
+        /// 修正间隔
+        /// </summary>
         private int revisedInterval = 0;
         private int interval = 100;
+        /// <summary>
+        /// 间隔
+        /// </summary>
         public int Interval
         {
             get { return interval; }
