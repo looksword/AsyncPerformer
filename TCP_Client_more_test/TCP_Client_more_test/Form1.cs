@@ -77,8 +77,8 @@ namespace TCP_Client_more_test
             for (int i = 0; i < int.Parse(ConnectNum.Text); i++)
             {
                 AsyncPerformer apf = new AsyncPerformer();
-                apf.Timeout = 4000;
-                apf.Interval = 1000;
+                apf.Timeout = 5 * uint.Parse(COMinterval.Text);
+                apf.Interval = int.Parse(COMinterval.Text);
                 apf.OnStart += TCPOnStart;
                 apf.OnStop += TCPOnStop;
                 apf.OnAsyncWork += TCPOnAsyncWork;
@@ -176,8 +176,8 @@ namespace TCP_Client_more_test
                 performer.userSocket.Bind(new IPEndPoint(IPAddress.Parse(LocalIP), performer.usePort));//指定本机地址及端口
                 performer.userSocket.Connect(DestinationIP.Text, int.Parse(DestinationPort.Text));
             }
-            performer.userSocket.SendTimeout = 500;
-            performer.userSocket.ReceiveTimeout = 500;
+            performer.userSocket.SendTimeout = (int)(0.5*performer.Interval);
+            performer.userSocket.ReceiveTimeout = performer.userSocket.SendTimeout;
         }
 
         private void TCPOnStop(AsyncPerformer performer, ref object userState)

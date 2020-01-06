@@ -42,6 +42,9 @@
             this.readORwrite = new System.Windows.Forms.ComboBox();
             this.listenPort = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.COMinterval = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -156,11 +159,39 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "起始监听端口号";
             // 
+            // COMinterval
+            // 
+            this.COMinterval.Location = new System.Drawing.Point(103, 65);
+            this.COMinterval.Name = "COMinterval";
+            this.COMinterval.Size = new System.Drawing.Size(47, 21);
+            this.COMinterval.TabIndex = 13;
+            this.COMinterval.Text = "1000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(40, 68);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(53, 12);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "采集间隔";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(151, 68);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(17, 12);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "ms";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 394);
+            this.Controls.Add(this.COMinterval);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.listenPort);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.readORwrite);
@@ -173,6 +204,7 @@
             this.Controls.Add(this.DestinationIP);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.label6);
             this.Name = "Form1";
             this.Text = "TCP多重连接测试";
             this.ResumeLayout(false);
@@ -195,6 +227,9 @@
         private System.Windows.Forms.ComboBox readORwrite;
         private System.Windows.Forms.TextBox listenPort;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox COMinterval;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
 
